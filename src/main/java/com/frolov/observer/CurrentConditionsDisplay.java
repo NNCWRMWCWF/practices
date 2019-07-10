@@ -1,16 +1,29 @@
 package com.frolov.observer;
 
+
+import java.util.Observable;
+
 /**
  * Created by Алексей on 09.04.2019.
  */
-public class CurrentConditionsDisplay implements Observer, DisplayElement{
-    private Subject weatherData;
+public class CurrentConditionsDisplay implements java.util.Observer, DisplayElement{
+    private Observable observable;
     private float temperature;
     private float humidity;
 
-    public CurrentConditionsDisplay(Subject weatherData){
-        this.weatherData = weatherData;
-        this.weatherData.registerObserver(this);
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof WeatherData){
+            WeatherData weatherData = (WeatherData) o;
+            this.temperature = weatherData.getTemperature();
+            this.humidity = weatherData.getHumidity();
+            display();
+        }
+    }
+
+    public CurrentConditionsDisplay(Observable observable){
+        this.observable = observable;
+        this.observable.addObserver(this);
     }
 
     @Override
@@ -18,10 +31,4 @@ public class CurrentConditionsDisplay implements Observer, DisplayElement{
         System.out.println("Current conditions: " + temperature + " F degrees and " + humidity + " % humidity");
     }
 
-    @Override
-    public void update(float temperature, float humidity, float pressure) {
-        this.temperature = temperature;
-        this.humidity = humidity;
-        display();
-    }
 }
